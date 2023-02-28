@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "send-todo-email"
+version = "0.1.0"
+description = ""
+authors = ["d3v-g"]
+readme = "README.md"
+packages = [{include = "send_todo_email"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.28.2"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
