@@ -30,6 +30,6 @@ def get_daily_tasks(status):
     for result in obj['results']:
         title = result['properties']['Name']['title'][0]['plain_text']
         task_url = result['url']
-        task = Task(title, task_url)
+        task = Task(status, title, task_url)
         tasks.append(task)
     return tasks
