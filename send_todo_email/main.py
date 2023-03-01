@@ -4,12 +4,15 @@ from dotenv import load_dotenv
 import os
 import requests
 import json
+from task import Task
 
 load_dotenv()
 
-def get_daily_tasks():
+
+def get_daily_tasks(status):
     url = os.getenv("NOTION_URL")
     notion_token = os.getenv("NOTION_TOKEN")
+
     headers = {
         "Authorization": "Bearer " + notion_token,
         "Content-Type": "application/json",
@@ -19,21 +22,39 @@ def get_daily_tasks():
         "filter": {
             "property": "Status",
             "select": {
-                "equals": "To Do"
+                "equals": status
             }
         }
     })
     res = requests.request("POST", url=url, headers=headers, data=payload)
+
+    if res.status_code != 200:
+        raise RuntimeError(
+            'Something wrong with the request, please check the headers and request body.')
+
     obj = res.json()
-    # todo: return todos, doings and done tasks
+    tasks = []
+    for result in obj['results']:
+        title = result['properties']['Name']['title'][0]['plain_text']
+        task_url = result['url']
+        task = Task(title, task_url)
+        tasks.append(task)
+    return tasks
+
 
 def compile_email():
     email = EmailMessage()
     email['from'] = 'Daily Tasks'
     email['to'] = os.getenv('TO_EMAIL')
     email['subject'] = 'Test'
+
+    todos = get_daily_tasks('To Do')
+    doings = get_daily_tasks('Doing')
+    dones = get_daily_tasks('Done')
+
     email.set_content('This is a test')
     return email
+
 
 def send_email(email):
     with smtplib.SMTP(host='smtp.gmail.com', port=587) as smtp:
@@ -44,10 +65,12 @@ def send_email(email):
         smtp.login(address, password)
         smtp.send_message(email)
 
+
 def main():
     email = compile_email()
     send_email(email)
     print('done')
+
 
 if __name__ == '__main__':
     main()
