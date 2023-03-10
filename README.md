@@ -1,7 +1,7 @@
 # send-todo-email-python
 
 ## About this project
-This is a Python programme that can send tasks from a Notion task list to your email.
+This is a Python programme that can send tasks from a Notion task list to your email. The email message itself is formated in HTML with inline CSS instead of boring vanilla text.
 
 ## Environment variables
 | Environment Variable | Explanation |
